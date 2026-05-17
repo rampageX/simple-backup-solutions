@@ -46,6 +46,45 @@ A bundle of scripts, that contain few simple solutions for backup, which I'm usi
   sudo chmod +x /etc/cron.daily/portable_backup_cron
   ````
 
+## LXC remote backup
+
+- This solution is designed for systems running **LXD**, where you manage remote LXC containers over a forwarded SSH/LXD connection and want dated local snapshots of each container along with the host LXD configuration.
+
+- What the script does:
+
+  - Starts a local SSH forward service ([`sshfwd-cvps.service`](https://openvscode-3001.metalevel.tech/blog/ssh-persistent-tunnel)) if the LXD API port (`8443`) is not yet reachable.
+  - Waits until the remote LXD is accessible and a known test container is visible.
+  - Exports every container on the remote LXD host to a dated `.tar.gz` file in the local backup directory.
+  - Dumps the remote LXD `init` configuration via SSH to a dated `.yaml` file.
+  - Rsync-pulls any additional backup files from the remote host's backup directory.
+  - Purges local backup files older than 14 days.
+
+- One file:
+
+  - [**`lxc-remote-backup.sh`**][8] - edit the variables at the top of the script to match your environment, then run it manually or schedule it via cron / systemd timer.
+
+- Key variables to configure:
+
+  | Variable             | Description                                           |
+  | -------------------- | ----------------------------------------------------- |
+  | `BACKUP_DIR`         | Local directory where exports are stored              |
+  | `SSH_HOST`           | SSH host alias for the remote server                  |
+  | `REMOTE_LXD`         | LXD remote name (as registered with `lxc remote add`) |
+  | `TEST_LXC_CONTAINER` | A container name used to verify the connection        |
+  | `REMOTE_BACKUP_DIR`  | Path on the remote host to rsync from                 |
+
+- Installation on fly (without using git):
+
+  ````shell
+  sudo wget -O /usr/local/bin/lxc-remote-backup https://raw.githubusercontent.com/metalevel-tech/simple-backup-solutions/master/lxc-remote-backup.sh
+  sudo chmod +x /usr/local/bin/lxc-remote-backup
+  ````
+
+### References
+
+- [Restore LXC via remote instance by Spas Z. Spasov (pa4080)](https://www.spasov.me/blog/restore-lxc-via-remote-instance)
+- [SSH Persistent Tunnel by Spas Z. Spasov (pa4080)](https://www.spasov.me/blog/ssh-persistent-tunnel)
+
 ## Notes
 
 - [How to rsync multiple source folders - on Unix & Linux](https://unix.stackexchange.com/a/368216/201297)
@@ -61,3 +100,4 @@ A bundle of scripts, that contain few simple solutions for backup, which I'm usi
  [5]: https://askubuntu.com/a/1010102/566421
  [6]: https://github.com/metalevel-tech/simple-backup-solutions/blob/master/portable_backup
  [7]: https://github.com/metalevel-tech/simple-backup-solutions/blob/master/portable_backup_cron
+ [8]: https://github.com/metalevel-tech/simple-backup-solutions/blob/master/lxc-remote-backup.sh
