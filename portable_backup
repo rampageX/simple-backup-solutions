@@ -2,7 +2,7 @@
 
 # @author    Spas Z. Spasov <spas.z.spasov@gmail.com>
 # @copyright 2021 Spas Z. Spasov
-# @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 (or later)
+# @license   MIT License https://github.com/metalevel-tech/simple-backup-solutions/blob/master/LICENSE
 
 # Set the user that should have easy access to the backup
 # Set the target backup directory
@@ -19,7 +19,7 @@ find "$BACKUP_DIR" -mtime +14 -type f -delete
 ## MySQL Section. The first line is if you are using `mysqldump`, the next line is for `automysqlbackup`. I'm using both.
 #mysqldump -u'root' -p'<my-pwd>' --all-databases | gzip > "$BACKUP_DIR"/mysql-all-db.sql.gz
 
-# Edit '/etc/default/automysqlbackup' and apply 'LATEST=yes' 
+# Edit '/etc/default/automysqlbackup' and apply 'LATEST=yes'
 #automysqlbackup
 
 ## Tar Section. Create a backup file, with the current date in its name.
